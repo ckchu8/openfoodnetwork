@@ -5,7 +5,7 @@ module Admin
     include OpenFoodNetwork::SpreeApiKeyLoader
     include EnterprisesHelper
 
-    prepend_before_filter :load_data
+    before_filter :load_data
     before_filter :load_collection, only: [:bulk_update]
     before_filter :load_spree_api_key, only: :index
 
@@ -73,7 +73,10 @@ module Admin
     end
 
     def collection
-      @variant_overrides = VariantOverride.includes(:variant).for_hubs(params[:hub_id] || @hubs)
+      @variant_overrides = VariantOverride.
+        includes(:variant).
+        for_hubs(params[:hub_id] || @hubs).
+        references(:variant)
       @variant_overrides.select { |vo| vo.variant.present? }
     end
 
